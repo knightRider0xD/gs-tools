@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+var results = { 
+"stdout_visibility": "hidden",
+"extra_data": {},
+"tests":
+  [
+            
+  ],
+};
+
+for (let i=2; i<process.argv.length; i++) {
+    results.tests = results.tests.concat(JSON.parse(process.argv[i]));
+} 
+
+if (results.tests.length == 0) {
+    results.score = 0;
+    results.output = "No test results available.";
+}
+
+console.log(JSON.stringify(results,null,2));

@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+var args = process.argv.slice(2);
+
+if(args[0].match(/help/g) || args.length < 2){
+    console.log(`Usage: ./cap_part_results [--help] part cap
+
+part: The name of the part/section to be capped, preferrably a number.
+cap: The maximum available marks for that part/section
+
+All tests whose names begin with the specified part name/prefix will be grouped and their total mark capped.
+
+`);
+}
+
+let results = JSON.parse(fs.readFileSync('/autograder/results/results.json'));
+
+var total = 0;
+
+var part_name = args[0];
+var cap_mark = parseFloat(args[1]);
+
+for(test of results.tests){
+    if(test.name.startsWith(part_name)){
+        total += parseFloat(test.score);
+    }
+}
+
+if(total > cap_mark){
+    results.tests.push({
+        "name": `${part_name}.99 Marks capped at maximum available`, "score": cap_mark-total, "max_score": cap_mark-total, "visibility": "visible", 
+        "output": `Well done! You've achieved the maximum ${cap_mark} points for Part ${part_name}.\nYour mark has been adjusted to not exceed this maximum.`
+    });
+}
+
+fs.writeFileSync('/autograder/results/results.json', JSON.stringify(results,null,2));

@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+var args = process.argv.slice(2);
+
+if(args[0].match(/help/g) || args.length < 3){
+    console.log(`Usage: ./apply_late_policy [--help|list] max_mark min_mark policy [custom]
+
+help: Show this message
+list: List available policies
+
+Where [policy] is the name of a pre-defined late policy.
+If [policy] is "custom" then an expression should be provided as an additional 4th argument.
+
+Expressions: The submission's original mark is held in the variable 'mark'
+The maximum and minimum marks as passed are held in the variable 'max_mark' and 'min_mark'
+The following time variables are available: late_seconds, late_minutes, late_hours, late_days, late_weeks
+These are rounded up to the nearest whole, 
+i.e. work submitted 1 minute late would be give the following values:
+    late_seconds == 60
+    late_minutes == 1
+    late_hours   == 1
+    late_days    == 1
+    late_weeks   == 1
+These are evaluated in a javascript expression, where the result of the expression is the final mark.
+examples: 
+    'mark*((4-late_days)*0.25)' would be 25% scaling per day late
+    'Math.max(mark,(max_mark*((4-late_days)*0.25)))' would be 25% mark cap per day late
+`);
+}
+
+let results = JSON.parse(fs.readFileSync('/autograder/results/results.json'));
+let mdata = JSON.parse(fs.readFileSync('/autograder/submission_metadata.json'));
+
+var mark = 0;
+
+if('score' in results){
+    mark = results.score;
+} else {
+    for(test of results.tests){
+        mark += test.score;
+    }
+}
+
+var max_mark = parseFloat(args[0]);
+var min_mark = parseFloat(args[1]);
+let policy = args[2];
+var expression = 'max_mark';
+var description = '';
+
+let late_absolute = Date.parse(mdata.created_at)-Date.parse(mdata.users[0].assignment.due_date);
+
+if(late_absolute <= 0){
+    console.log('Submitted on time');
+    process.exit();
+}
+
+console.log('Late submission detected; applying late policy');
+console.log('Tests mark: '+mark);
+
+var late_seconds = 1 + parseInt((late_absolute-1)/1000);
+var late_minutes = 1 + parseInt((late_seconds-1)/60);
+var late_hours = 1 + parseInt((late_minutes-1)/60);
+var late_days = 1 + parseInt((late_hours-1)/24);
+var late_weeks = 1 + parseInt((late_days-1)/7);
+
+console.log(`\nLate by: ${late_absolute} (${late_days-1}d ${parseInt((late_hours-1)%24)}h ${parseInt((late_minutes-1)%60)}m ${parseInt((late_seconds-1)%60)}s)`);
+
+var predefined = {
+    '25CapDay' : {
+        description: 'Maximum available marks reduced by 25% after deadline and each day thereafter.',
+        expression: 'Math.min(mark,(max_mark*((4-late_days)*0.25)))'
+    }
+}
+
+if(policy !== 'custom' && policy in predefined){
+    expression = predefined[policy].expression;
+    description = '('+predefined[policy].description+')';
+} else if(policy === 'custom' && args.length >= 4){
+    expression = args[3];
+}
+
+results.score = Math.min(Math.max(eval(expression),min_mark),max_mark);
+console.log('Late mark: '+results.score);
+
+results.tests.splice(0, 0, {
+    "name": "Late Submission", 
+    "output": "This submission was submitted late.\nThe final mark has been adjusted according the relevant late policy "+description
+});
+
+fs.writeFileSync('/autograder/results/results.json', JSON.stringify(results,null,2));
