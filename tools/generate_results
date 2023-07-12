@@ -2,6 +2,7 @@
 
 var results = { 
 "stdout_visibility": "hidden",
+"score": 0,
 "extra_data": {},
 "tests":
   [
@@ -9,13 +10,25 @@ var results = {
   ],
 };
 
+// Read Arguments
 for (let i=2; i<process.argv.length; i++) {
-    results.tests = results.tests.concat(JSON.parse(process.argv[i]));
+    try {
+        let res = JSON.parse(process.argv[i]);
+        results.tests = results.tests.concat(res);
+    } catch (e) {
+        console.error('Cannot process input '+(i-2));
+    }
 } 
 
+// Calculate Final Score
 if (results.tests.length == 0) {
-    results.score = 0;
     results.output = "No test results available.";
+} else {
+    for (let res of results.tests) {
+        if ('score' in res){
+            results.score += parseFloat(res.score);
+        }
+    }
 }
 
 console.log(JSON.stringify(results,null,2));

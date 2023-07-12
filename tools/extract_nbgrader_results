@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+var args = process.argv.slice(2);
+
+if(args[0].match(/help/g) || args.length < 1){
+    console.log(`Usage: ./extract_nbgrader_results [--help] autograded_notebook.ipynb [ additional_notebooks.ipynb ... ]
+
+autograded_notebook.ipynb: The path to a notebook that has been autograded by nbgrader.
+
+`);
+    process.exit();
+}
+
+let results = [];
+
+for (let nbpath of args) {
+
+    let nbout = JSON.parse(fs.readFileSync(nbpath));
+
+    for (let cell of nbout.cells) {
+
+        // Check for code cells
+        if(!('cell_type' in cell) || cell.cell_type !== "code"){ continue; }
+
+        // Check for output and nbgrader metadata
+        if(!('outputs' in cell) || !('metadata' in cell) || !('nbgrader' in cell.metadata)){ continue; }
+
+        let nbmd = cell.metadata.nbgrader;
+        let outputs = cell.outputs;
+
+        // Check graded cell, test name & # points
+        if(!('grade' in nbmd) || !nbmd.grade || !('grade_id' in nbmd) || !('points' in nbmd)){ continue; }
+
+        let errors = [];
+
+        // check for failing tests & record error messages
+        for (let out of outputs) {
+            if('output_type' in out && out.output_type == "error"){ errors.push(out); }
+        }
+
+        if(errors.length <= 0){
+
+            console.error(`Test ${nbmd.grade_id} [ PASS ]`);
+
+            results.push({
+                "name": nbmd.grade_id, "score": nbmd.points, "max_score": nbmd.points, "visibility": "visible", 
+                "output": "Test(s) passed. Well done!", 
+                "extra_data": {}
+            });
+
+        } else {
+            console.error(`Test ${nbmd.grade_id} [ FAIL ]`);
+            let messages = '';
+            for(let e of errors){
+                messages += e.evalue + '\n';
+                console.error(e.evalue);
+                console.error(e.traceback.join('\n'));
+            }
+
+            results.push({
+                "name": nbmd.grade_id, "score": 0, "max_score": nbmd.points, "visibility": "visible", 
+                "output": "One or more errors occurred while testing. Feedback below: \n"+messages, 
+                "extra_data": {}
+            });
+        }
+
+    }
+
+}
+
+console.log(JSON.stringify(results,null,2));

@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+var result = { 
+  "name": process.argv[2], "score": 0.0, "max_score": 0.0, "visibility": "visible", 
+  "output": "No results", 
+  "extra_data": {}
+};
+let total = 0;
+let passed = 0;
+
+for (let i=3; i<process.argv.length; i++) {
+    try {
+        let res = JSON.parse(process.argv[i]);
+        result.score += (res.score*1000);
+        result.max_score += (res.max_score*1000);
+        total ++;
+        if(res.score >= res.max_score){
+          passed ++;
+        }
+    } catch (e) {
+        console.error(`Malformed test result [${i-2}]: \nOne of the test results is not valid JSON. Please contact your the person who setup this autograder.\n`+process.argv[i]);
+    }
+} 
+
+if (total > 0) {
+    result.score = result.score/1000;
+    result.max_score = result.max_score/1000;
+    result.output = `${passed} out of ${total} tests passed`;
+}
+
+console.log(JSON.stringify(result,null,2));
