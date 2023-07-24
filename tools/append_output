@@ -15,7 +15,7 @@ output: The text to be appended to the output field of the result. Multiple outp
 let res = {};
 
 try {
-  res = JSON.parse(process.args[0]);
+  res = JSON.parse(args[0]);
 } catch (e) {
   console.error('Cannot load result to append output');
   process.exit();
