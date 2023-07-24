@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #include <limits>
 
 using namespace std;
@@ -17,11 +18,11 @@ using namespace std;
  * @param output The test output to show in Gradescope as a multiline text string.
  * @return 0 if successful
  */
-static int GradescopeResult::writeBasicTest( string outputFile, float score, float max_score, string name, string output ) {
+int GradescopeResult::writeBasicTest( string outputFile, float score, float max_score, string name, string output ) {
     
     string status = "failed";
     if(score >= max_score){
-        status = "passed"
+        status = "passed";
     }
 
     return GradescopeResult::writeResult( outputFile, score, max_score, status, name, output );
@@ -36,7 +37,7 @@ static int GradescopeResult::writeBasicTest( string outputFile, float score, flo
  * @param output The full body of the message to show in Gradescope as a multiline text string.
  * @return 0 if successful
  */
-static int GradescopeResult::writeInfoMessage( string outputFile, string status, string name, string output ) {
+int GradescopeResult::writeInfoMessage( string outputFile, string status, string name, string output ) {
 
     return GradescopeResult::writeResult( outputFile, numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN(), status, name, output );
 
@@ -57,12 +58,12 @@ static int GradescopeResult::writeInfoMessage( string outputFile, string status,
  * @param extra_data If you want to attach additional metadata to the test result, you can add it as a JSON formatted object string.
  * @return 0 if successful
  */
-static int string GradescopeResult::writeResult( string outputFile, float score, float max_score, string status, string name, string output, string visibility, string name_format, string output_format, string extra_data ) {
+int GradescopeResult::writeResult( string outputFile, float score, float max_score, string status, string name, string output, string visibility, string name_format, string output_format, string extra_data ) {
     
-    ofstream outfile(file_name);
+    ofstream outfile(outputFile);
 
     if (!outfile) {
-        cerr << "Error opening file: " << file_name << endl;
+        cerr << "Error opening file: " << outputFile << endl;
         return 1;
     }
 
@@ -71,37 +72,39 @@ static int string GradescopeResult::writeResult( string outputFile, float score,
         score = 0.0;
     }
 
+    size_t pos;
+
     // Escape double quotes in name
-    size_t pos = 0;
+    pos = 0;
     while ((pos = name.find("\"", pos)) != string::npos) {
         name.replace(pos, 1, "\\\"");
         pos += 2; // Move past the escaped double quote
     }
 
     // Escape double quotes in output
-    size_t pos = 0;
+    pos = 0;
     while ((pos = output.find("\"", pos)) != string::npos) {
         output.replace(pos, 1, "\\\"");
         pos += 2; // Move past the escaped double quote
     }
 
     stringstream json;
-    json << "[\n";
-    json << "    {\n";
+    json << "{\n";
     if(!(isnan(max_score))){                                            // If max_score is NaN, skip including a score
-        json << "        \"score\": " << score << ",\n";                // Optional, but required if not on top level submission
-        json << "        \"max_score\": " << max_score << ",\n";        // Optional
+        json << "    \"score\": " << score << ",\n";                // Optional, but required if not on top level submission
+        json << "    \"max_score\": " << max_score << ",\n";        // Optional
     }
-    json << "        \"status\": \"" << status << "\",\n";              // Optional, see \"Test case status\" below
-    json << "        \"name\": \"" << name << "\",\n";                  // Optional
-    json << "        \"output\": \"" << output << "\",\n";              // Optional
-    json << "        \"output_format\": \"" << output_format << "\",\n";// Optional formatting for the test case output, see \"Output String Formatting\" below
-    json << "        \"visibility\": \"" << visibility << "\",\n";      // Optional visibility setting
-    json << "        \"extra_data\": " << extra_data << "\n";           // Optional extra data to be stored
-    json << "    }\n";
-    json << "]\n";
+    json << "    \"status\": \"" << status << "\",\n";              // Optional, see \"Test case status\" below
+    json << "    \"name\": \"" << name << "\",\n";                  // Optional
+    json << "    \"output\": \"" << output << "\",\n";              // Optional
+    json << "    \"output_format\": \"" << output_format << "\",\n";// Optional formatting for the test case output, see \"Output String Formatting\" below
+    json << "    \"visibility\": \"" << visibility << "\",\n";      // Optional visibility setting
+    json << "    \"extra_data\": " << extra_data << "\n";           // Optional extra data to be stored
+    json << "}\n";
 
     outfile << json.str();
     outfile.close();
+
+    return 0;
 
 }
