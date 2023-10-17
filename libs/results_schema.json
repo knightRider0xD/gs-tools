@@ -1,0 +1,403 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "results.json",
+    "type": "object",
+    "default": {},
+    "title": "Gradescope Autograder results.json",
+    "anyOf": [ 
+        {"required": [ "score" ]},
+        {"required": [ "tests" ]}
+    ],
+    "properties": {
+        "score": {
+            "type": "number",
+            "default": 0.0,
+            "title": "Total score",
+            "description": "Overrides total of tests.",
+            "examples": [
+                0,
+                10,
+                72.0
+            ]
+        },
+        "execution_time": {
+            "type": "integer",
+            "default": 0,
+            "title": "Exection time",
+            "description": "Optional, seconds",
+            "examples": [
+                136
+            ]
+        },
+        "output": {
+            "type": "string",
+            "default": "",
+            "title": "Output message",
+            "description": "Optional text/message for the whole submission",
+            "examples": [
+                "Text relevant to the entire submission"
+            ]
+        },
+        "output_format": {
+            "type": "string",
+            "default": "simple_format",
+            "title": "Output message format",
+            "description": "Optional output format settings",
+            "enum": [
+                "simple_format",
+                "text",
+                "html",
+                "md",
+                "ansi"
+            ]
+        },
+        "test_output_format": {
+            "type": "string",
+            "default": "text",
+            "title": "Test case output format",
+            "description": "Optional default output format for test case outputs",
+            "enum": [
+                "text",
+                "simple_format",
+                "html",
+                "md",
+                "ansi"
+            ]
+        },
+        "test_name_format": {
+            "type": "string",
+            "default": "text",
+            "title": "Test case name format",
+            "description": "Optional default output format for test case names",
+            "enum": [
+                "text",
+                "simple_format",
+                "html",
+                "md",
+                "ansi"
+            ]
+        },
+        "visibility": {
+            "type": "string",
+            "default": "visible",
+            "title": "Result visibility",
+            "description": "Optional visibility setting for when to display results",
+            "enum": [
+                "visible",
+                "hidden",
+                "after_due_date",
+                "after_published"
+            ]
+        },
+        "stdout_visibility": {
+            "type": "string",
+            "default": "visible",
+            "title": "Result visibility",
+            "description": "Optional visibility setting for when to display stdout",
+            "enum": [
+                "visible",
+                "hidden",
+                "after_due_date",
+                "after_published"
+            ]
+        },
+        "extra_data": {
+            "type": "object",
+            "default": {},
+            "title": "Extra data",
+            "description": "Optional metadata that can be added",
+            "required": [],
+            "properties": {},
+            "examples": [{}]
+        },
+        "tests": {
+            "type": "array",
+            "default": [],
+            "title": "Individual test results",
+            "items": {
+                "type": "object",
+                "default": {},
+                "title": "A Schema",
+                "anyOf": [ 
+                    {"required": [ "name" ]},
+                    {"required": [ "number" ]}
+                ],
+                "required": [
+                    "score",
+                    "max_score",
+                    "status",
+                    "name",
+                    "name_format",
+                    "number",
+                    "output",
+                    "output_format",
+                    "tags",
+                    "visibility",
+                    "extra_data"
+                ],
+                "properties": {
+                    "score": {
+                        "type": "number",
+                        "default": 0.0,
+                        "title": "The score Schema",
+                        "examples": [
+                            2.0
+                        ]
+                    },
+                    "max_score": {
+                        "type": "number",
+                        "default": 0.0,
+                        "title": "The max_score Schema",
+                        "examples": [
+                            2.0
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "default": "passed",
+                        "title": "The status Schema",
+                        "enum": [
+                            "passed",
+                            "failed"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "",
+                        "title": "Test name",
+                        "examples": [
+                            "Your name here"
+                        ]
+                    },
+                    "name_format": {
+                        "type": "string",
+                        "default": "text",
+                        "title": "The name_format Schema",
+                        "enum": [
+                            "text",
+                            "simple_format",
+                            "html",
+                            "md",
+                            "ansi"
+                        ]
+                    },
+                    "number": {
+                        "type": "string",
+                        "default": "",
+                        "title": "Test number",
+                        "examples": [
+                            "1.1"
+                        ]
+                    },
+                    "output": {
+                        "type": "string",
+                        "default": "",
+                        "title": "The output Schema",
+                        "examples": [
+                            "Giant multiline string that will be placed in a pre tag and collapsed by default"
+                        ]
+                    },
+                    "output_format": {
+                        "type": "string",
+                        "default": "text",
+                        "title": "The output_format Schema",
+                        "enum": [
+                            "text",
+                            "simple_format",
+                            "html",
+                            "md",
+                            "ansi"
+                        ]
+                    },
+                    "tags": {
+                        "type": "array",
+                        "default": [],
+                        "title": "The tags Schema",
+                        "items": {
+                            "type": "string",
+                            "title": "A Schema",
+                            "examples": [
+                                "tag1",
+                                "tag2",
+                                "tag3"
+                            ]
+                        },
+                        "examples": [
+                            [
+                                "tag1",
+                                "tag2",
+                                "tag3"
+                            ]
+                        ]
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "default": "",
+                        "title": "The visibility Schema",
+                        "examples": [
+                            "visible"
+                        ]
+                    },
+                    "extra_data": {
+                        "type": "object",
+                        "default": {},
+                        "title": "The extra_data Schema",
+                        "required": [],
+                        "properties": {},
+                        "examples": [{}]
+                    }
+                },
+                "examples": [{
+                    "score": 2.0,
+                    "max_score": 2.0,
+                    "status": "passed",
+                    "name": "Your name here",
+                    "name_format": "text",
+                    "number": "1.1",
+                    "output": "Giant multiline string that will be placed in a pre tag and collapsed by default",
+                    "output_format": "text",
+                    "tags": [
+                        "tag1",
+                        "tag2",
+                        "tag3"
+                    ],
+                    "visibility": "visible",
+                    "extra_data": {}
+                }]
+            },
+            "examples": [
+                [{
+                    "score": 2.0,
+                    "max_score": 2.0,
+                    "status": "passed",
+                    "name": "Your name here",
+                    "name_format": "text",
+                    "number": "1.1",
+                    "output": "Giant multiline string that will be placed in a pre tag and collapsed by default",
+                    "output_format": "text",
+                    "tags": [
+                        "tag1",
+                        "tag2",
+                        "tag3"
+                    ],
+                    "visibility": "visible",
+                    "extra_data": {}
+                }]
+            ]
+        },
+        "leaderboard": {
+            "type": "array",
+            "default": [],
+            "title": "The leaderboard Schema",
+            "items": {
+                "type": "object",
+                "title": "A Schema",
+                "required": [
+                    "name",
+                    "value"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Ranking category name",
+                        "examples": [
+                            "Accuracy",
+                            "Time",
+                            "Stars"
+                        ]
+                    },
+                    "value": {
+                        "anyOf": [
+                            { "type": "number" },
+                            { "type": "string" }
+                        ],
+                        "title": "Rank value",
+                        "examples": [
+                            0.926,
+                            15.1,
+                            "*****"
+                        ]
+                    },
+                    "order": {
+                        "type": "string",
+                        "default": "desc",
+                        "title": "Ranking category order",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ]
+                    }
+                },
+                "examples": [{
+                    "name": "Accuracy",
+                    "value": 0.926
+                },
+                {
+                    "name": "Time",
+                    "value": 15.1,
+                    "order": "asc"
+                },
+                {
+                    "name": "Stars",
+                    "value": "*****"
+                }]
+            },
+            "examples": [
+                [{
+                    "name": "Accuracy",
+                    "value": 0.926
+                },
+                {
+                    "name": "Time",
+                    "value": 15.1,
+                    "order": "asc"
+                },
+                {
+                    "name": "Stars",
+                    "value": "*****"
+                }]
+            ]
+        }
+    },
+    "examples": [{
+        "score": 44.0,
+        "execution_time": 136,
+        "output": "Text relevant to the entire submission",
+        "output_format": "simple_format",
+        "test_output_format": "text",
+        "test_name_format": "text",
+        "visibility": "after_due_date",
+        "stdout_visibility": "visible",
+        "extra_data": {},
+        "tests": [{
+            "score": 2.0,
+            "max_score": 2.0,
+            "status": "passed",
+            "name": "Your name here",
+            "name_format": "text",
+            "number": "1.1",
+            "output": "Giant multiline string that will be placed in a pre tag and collapsed by default",
+            "output_format": "text",
+            "tags": [
+                "tag1",
+                "tag2",
+                "tag3"
+            ],
+            "visibility": "visible",
+            "extra_data": {}
+        }],
+        "leaderboard": [{
+            "name": "Accuracy",
+            "value": 0.926
+        },
+        {
+            "name": "Time",
+            "value": 15.1,
+            "order": "asc"
+        },
+        {
+            "name": "Stars",
+            "value": "*****"
+        }]
+    }]
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var results = {
+  "name": process.argv[2], 
+  "score": parseInt(process.argv[3]), "max_score": parseInt(process.argv[4]),
+  "status": "failed", "visibility": "visible",
+  "output": process.argv[5]
+};
+
+if (results.score >= results.max_score){
+  results.status = "passed";
+}
+
+console.log(JSON.stringify(results,null,2));

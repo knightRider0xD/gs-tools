@@ -1,0 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "Gradescope",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "gradescope/autograder-base:latest",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "chmod +x /autograder/source/run_autograder /autograder/source/setup.sh; /autograder/source/setup.sh; ln -s /autograder/run_autograder /autograder/source/run_autograder",
+
+	// Mount the sandpit folder
+	"workspaceMount": "source=${localWorkspaceFolder}/autograder_sandpit,target=/autograder,type=bind,consistency=cached", 
+	"workspaceFolder": "/autograder",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}

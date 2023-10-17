@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var args = process.argv.slice(2);
+var help = `Usage: gs-message [--help] type name output
+
+type:   The type of message to display; either "error" or "info" (without quotes). 
+        Error messages show as failed tests.
+name:   The name/title to show with the message.
+output: The contents of the message.
+
+`;
+
+if(args[0].match(/help/g) || args.length < 3){
+    console.log(help);
+    process.exit(0);
+} 
+if(args.length < 3){
+    console.error(help);
+    console.log(JSON.stringify([],null,2));
+    process.exit(1);
+}
+
+var results = {
+    "name": args[1], 
+    "status": args[0].toLowerCase() == "info" ? "passed" : "failed", "visibility": "visible",
+    "output": args[2]
+};
+
+console.log(JSON.stringify(results,null,2));

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Generate a message
+gs-message "Example Script" "This is an example gradescope autograder."

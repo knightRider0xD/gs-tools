@@ -4,7 +4,7 @@ const fs = require('fs');
 var args = process.argv.slice(2);
 
 if(args[0].match(/help/g) || args.length < 1){
-    console.log(`Usage: ./extract_nbgrader_results [--help] autograded_notebook.ipynb [ additional_notebooks.ipynb ... ]
+    console.log(`Usage: nbgrader-to-gs [--help] autograded_notebook.ipynb [ additional_notebooks.ipynb ... ]
 
 autograded_notebook.ipynb: The path to a notebook that has been autograded by nbgrader.
 
